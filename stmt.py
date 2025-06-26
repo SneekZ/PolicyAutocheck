@@ -1,4 +1,5 @@
 STMT_GET_CLIENTS = """
+-- Пациенты, которые обслуживались за последнюю неделю
 WITH maxDate AS(
 SELECT
   MAX(e.id) AS id,
@@ -14,7 +15,7 @@ GROUP BY
 )
 -- main
 SELECT
-  *
+  c.lastName, c.firstName, c.patrName, c.birthDate, rdt.code, CONCAT(cd.serial, ":", cd.number)
 FROM
   Client c
 LEFT JOIN ClientPolicy cp ON
@@ -48,3 +49,5 @@ WHERE
   AND c.notes not regexp 'тест'
   AND cp.id IS NULL;
 """
+
+STMT_GET_LPU_ID = "SELECT os.netrica_Code FROM OrgStructure WHERE parent_id IS NULL AND deleted = 0"
