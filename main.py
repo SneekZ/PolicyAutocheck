@@ -10,22 +10,35 @@ async def sendIdentityPatient(lpuId, client: dict) -> dict:
     async with aiohttp.ClientSession() as session:
         async with session.post(
             BASE_URL,
-            json=client,
+            json={
+                "resourceType": "Parameters",
+                "parameter": toFhir(client),
+                },
             headers={
                 "Authorization": "N3 " + GUID,
+                "Content-Type": "application/json",
             }
             ) as response:
 
             status = response.status
-            headers = response.headers
             text = await response.text()  
 
             print(f"🌐 Статус: {status}")
-            print("📦 Заголовки:", headers)
             print("📄 Ответ:")
             print(text)
 
             return text
+
+def toFhir(client: dict) -> list[dict]:
+    result = []
+    
+    for k, v in client.items():
+        result.append({
+            "name": k,
+            "valueString": v
+        })
+
+    return result
 
 async def main():
     clients = await db.getClients()
