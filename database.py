@@ -2,7 +2,7 @@ import aiomysql
 import asyncio
 
 from config import DATABASE_CONNECTION
-from stmt import STMT_GET_CLIENTS, STMT_GET_LPU_ID
+from stmt import STMT_GET_CLIENTS, STMT_GET_LPU_ID, STMT_INSERT_POLICY_CHECK
 
 async def getClients() -> dict:
     async with await aiomysql.connect(
@@ -12,8 +12,7 @@ async def getClients() -> dict:
         async with conn.cursor() as cursor:
             await cursor.execute(STMT_GET_CLIENTS) 
             rows = await cursor.fetchall()
-            print(cleanClient(rows[0]))
-            # return list(map(cleanClient, rows))
+            return list(map(cleanClient, rows))
 
 async def getLpuId() -> str:
     async with await aiomysql.connect(
@@ -22,17 +21,25 @@ async def getLpuId() -> str:
     ) as conn:
         async with conn.cursor() as cursor:
             await cursor.execute(STMT_GET_LPU_ID) 
-            rows = await cursor.fetchone()
-            print(rows)
+            row = await cursor.fetchone()
+            return row[0]
 
-def cleanClient(clientInfo: tuple) -> dict:
-    return {
-        "patientSurname": clientInfo[0],
-        "patientName": clientInfo[1],
-        "patientPatronymic": clientInfo[2],
-        "birthDate": str(clientInfo[3]),
-        "docType": clientInfo[4],
-        "docNumber": ''.join(clientInfo[5].split())
+async def writeCheckPolicy(messageId, clientId, error) -> str:
+    async with await aiomysql.connect(
+        **DATABASE_CONNECTION,
+        autocommit=True
+    ) as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute(STMT_INSERT_POLICY_CHECK, (messageId, clientId, error))
+
+def cleanClient(clientInfo: tuple) -> tuple[int, dict]:
+    return clientInfo[0], {
+        "patientSurname": clientInfo[1],
+        "patientName": clientInfo[2],
+        "patientPatronymic": clientInfo[3],
+        "birthDate": str(clientInfo[4]),
+        "docType": clientInfo[5],
+        "docNumber": ''.join(clientInfo[6].split())
     }
 
 if __name__=="__main__":
