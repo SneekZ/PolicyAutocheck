@@ -38,7 +38,7 @@ def cleanClient(clientInfo: tuple) -> tuple[int, dict]:
         "patientName": clientInfo[2],
         "patientPatronymic": clientInfo[3],
         "birthDate": str(clientInfo[4]),
-        "docType": "urn:oid:1.2.643.2.69.1.1.1.6.14" + clientInfo[5],
+        "docType": "urn:oid:1.2.643.2.69.1.1.1.6" + clientInfo[5],
         "docNumber": ''.join(clientInfo[6].split())
     }
 
