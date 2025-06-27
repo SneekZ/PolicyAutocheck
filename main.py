@@ -24,10 +24,9 @@ async def sendIdentityPatient(lpuId, client: dict) -> tuple[str, str]:
             text = await response.json()  
 
             if status == 200:
-                return text["parameter"][0]["valueString"], ""
+                return text["parameter"][0]["valueString"], None
             else:
-                print(status)
-                print(text)
+                return None, text["issue"][0]["details"]["coding"][0]["display"]
 
 def toFhir(client: dict) -> list[dict]:
     result = []
@@ -44,8 +43,8 @@ async def main():
     clients = await db.getClients()
     lpuId = await db.getLpuId()
 
-    print(f"sending client {clients[0][0]}")
-    await sendIdentityPatient(lpuId, clients[0][1])
+    result = await sendIdentityPatient(lpuId, clients[0][1])
+    print(result)
 
 if __name__=="__main__":
     asyncio.run(main())
