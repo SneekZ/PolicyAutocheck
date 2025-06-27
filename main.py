@@ -21,13 +21,11 @@ async def sendIdentityPatient(lpuId, client: dict) -> dict:
             ) as response:
 
             status = response.status
-            text = await response.text()  
-
-            print(f"🌐 Статус: {status}")
-            print("📄 Ответ:")
-            print(text)
-
-            return text
+            if status == 200:
+                text = await response.text()  
+                await db.writeCheckPolicy(text["parameter"][0]["valueString"])
+            else:
+                print(f"🌐 Статус: {status}")
 
 def toFhir(client: dict) -> list[dict]:
     result = []
