@@ -21,7 +21,7 @@ async def sendIdentityPatient(lpuId, client: dict) -> tuple[str, str]:
             ) as response:
 
             status = response.status
-            text = await response.text()  
+            text = await response.json()  
 
             if status == 200:
                 return text["parameter"][0]["valueString"], ""
