@@ -4,7 +4,7 @@ import asyncio
 import database as db
 from config import BASE_URL, GUID
 
-async def sendIdentityPatient(lpuId, client: dict) -> dict:
+async def sendIdentityPatient(lpuId, client: dict) -> tuple[str, str]:
     client["lpuId"] = lpuId
 
     async with aiohttp.ClientSession() as session:
@@ -21,11 +21,13 @@ async def sendIdentityPatient(lpuId, client: dict) -> dict:
             ) as response:
 
             status = response.status
+            text = await response.text()  
+
             if status == 200:
-                text = await response.text()  
-                await db.writeCheckPolicy(text["parameter"][0]["valueString"])
+                return text["parameter"][0]["valueString"], ""
             else:
-                print(f"🌐 Статус: {status}")
+                print(status)
+                print(text)
 
 def toFhir(client: dict) -> list[dict]:
     result = []
