@@ -75,10 +75,10 @@ async def main():
         try:
             result = await sendIdentityPatient(lpuId, client[1])
             await db.writeCheckPolicy(result[0], client[0], result[1])
-            logging.info(f"Клиент {client[0]} успешно отправлен")
+            logger.info(f"Клиент {client[0]} успешно отправлен")
 
         except Exception as e:
-            logging.error(f"Клиента {client[0]} не удалось отправить: {str(e)}")
+            logger.error(f"Клиента {client[0]} не удалось отправить: {str(e)}")
 
 
 if __name__=="__main__":
