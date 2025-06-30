@@ -2,7 +2,7 @@ import aiomysql
 import asyncio
 
 from config import DATABASE_CONNECTION
-from stmt import STMT_GET_CLIENTS, STMT_GET_LPU_ID, STMT_INSERT_POLICY_CHECK
+from stmt import STMT_GET_CLIENTS, STMT_GET_LPU_ID, STMT_INSERT_POLICY_CHECK, STMT_CLEAN_CHECK_POLICY
 
 async def getClients() -> dict:
     async with await aiomysql.connect(
@@ -31,6 +31,14 @@ async def writeCheckPolicy(messageId, clientId, error) -> str:
     ) as conn:
         async with conn.cursor() as cursor:
             await cursor.execute(STMT_INSERT_POLICY_CHECK, (messageId, clientId, error))
+
+async def cleanCheckPolicy() -> None:
+    async with await aiomysql.connect(
+        **DATABASE_CONNECTION,
+        autocommit=True
+    ) as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute(STMT_CLEAN_CHECK_POLICY)
 
 def cleanClient(clientInfo: tuple) -> tuple[int, dict]:
     return clientInfo[0], {

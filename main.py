@@ -68,6 +68,8 @@ def toFhir(client: dict) -> list[dict]:
     return result
 
 async def main():
+    await db.cleanCheckPolicy()
+
     clients = await db.getClients()
     lpuId = await db.getLpuId()
 

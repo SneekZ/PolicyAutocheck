@@ -53,3 +53,5 @@ WHERE
 STMT_GET_LPU_ID = "SELECT netrica_Code FROM OrgStructure WHERE parent_id IS NULL AND deleted = 0"
 
 STMT_INSERT_POLICY_CHECK = "INSERT INTO CheckPolicy (message_id, client_id, date, deleted, requestType, errors) values (%s, %s, CURRENT_DATE(), 0, 1, %s)"
+
+STMT_CLEAN_CHECK_POLICY = "UPDATE CheckPolicy SET deleted = 1"
